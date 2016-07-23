@@ -87,10 +87,10 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
         this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
+        LatLng loc = new LatLng(latitude, longitude);
         Timer timer = new Timer();
         timer.schedule(new FirstTask(this), 0,5000);
         // Add a marker in Sydney and move the camera
-        LatLng loc = new LatLng(latitude, longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
     }
 
