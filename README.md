@@ -1,5 +1,5 @@
 # BetaGo
-Android app using augmented reality.
+Android game using augmented reality.
  - built using Google Maps Android API
  - inspired by Pokemon Go
 
