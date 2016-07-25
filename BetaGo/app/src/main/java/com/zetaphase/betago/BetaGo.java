@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,26 +18,31 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Timer;
 import java.util.TimerTask;
 
 class MarkerThread extends Thread {
     private BetaGo activity;
 
+    private HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
+
     MarkerThread(BetaGo activity){
         this.activity = activity;
     }
 
-    private StringBuffer request(String urlString) {
+    private StringBuffer request(String urlString, JSONObject jsonObj) {
         // TODO Auto-generated method stub
 
         StringBuffer chaine = new StringBuffer("");
@@ -49,6 +53,12 @@ class MarkerThread extends Thread {
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.connect();
+
+            byte[] b = jsonObj.toString().getBytes();
+
+            OutputStream outputStream = connection.getOutputStream();
+            outputStream.write(b);
+
 
             InputStream inputStream = connection.getInputStream();
 
@@ -66,7 +76,23 @@ class MarkerThread extends Thread {
         return chaine;
     }
 
-    private void post() throws IOException {
+    public static HashMap<String, String> jsonToMap(String t) throws JSONException {
+
+        HashMap<String, String> map = new HashMap<String, String>();
+        JSONObject jObject = new JSONObject(t);
+        Iterator<?> keys = jObject.keys();
+
+        while( keys.hasNext() ){
+            String key = (String)keys.next();
+            String value = jObject.getString(key);
+            map.put(key, value);
+
+        }
+
+        return map;
+    }
+
+    private void post() throws IOException, JSONException {
         Log.d("POST", "posting");
         Location location = activity.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         final double longitude = location.getLongitude();
@@ -78,14 +104,23 @@ class MarkerThread extends Thread {
         hmap.put("lat", String.valueOf(latitude));
         hmap.put("lng", String.valueOf(longitude));
         JSONObject jsonObj = new JSONObject(hmap);
-        Log.d("POST", jsonObj.toString());
-        StringBuffer a = request("http://192.168.1.68");
-        Log.d("POST", String.valueOf(a));
+        Log.d("RICKY", jsonObj.toString());
+        StringBuffer a = request("http://192.168.1.68", jsonObj);
+        Log.d("DAVEY", String.valueOf(a));
         Log.d("POST", "Attempting to run on ui thread");
+        final HashMap<String, HashMap<String, String>> response = jsonToMap(String.valueOf(a));
+        Log.d("RESPONSE", String.valueOf(response));
 
         activity.runOnUiThread(new Runnable() {
             public void run(){
                 //Toast.makeText(activity.getBaseContext(), (CharSequence) httpresponse, Toast.LENGTH_LONG).show();
+                for(String key : response.keySet()){
+                    lat = response.get(key)
+                    if (!markerMap.containsKey(key)){
+                        Log.d("MARKER", response.get(key));
+                        //markerMap.get(key) = activity.mMap.addMarker(new MarkerOptions().position(new LatLng(response.get(key).get(""))));
+                    }
+                }
                 activity.marker = activity.mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
                 activity.marker.setVisible(true);
             }
@@ -98,6 +133,8 @@ class MarkerThread extends Thread {
         try {
             post();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e){
             e.printStackTrace();
         }
     }
@@ -113,19 +150,8 @@ class FirstTask extends TimerTask {
 
     @Override
     public void run() {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                activity.marker.setPosition(new LatLng(activity.latlist[activity.pointer], activity.longlist[activity.pointer]));
-                Location location = activity.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                double longitude = location.getLongitude();
-                double latitude = location.getLatitude();
-                activity.latlist[activity.pointer] = latitude;
-                activity.longlist[activity.pointer] = longitude;
-                activity.pointer = (activity.pointer + 1) % activity.ARRAY_SIZE;
-                Toast.makeText(activity.getBaseContext(), "current time: " + new Date(),
-                        Toast.LENGTH_LONG).show();
-            }
-        });
+        MarkerThread thread = new MarkerThread(this.activity);
+        thread.start();
     }
 };
 
@@ -170,11 +196,9 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
         Location location = this.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         final double longitude = location.getLongitude();
         final double latitude = location.getLatitude();
-        MarkerThread thread = new MarkerThread(this);
-        thread.start();
         //this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
-        //Timer timer = new Timer();
-        //timer.schedule(new FirstTask(this), 0,5000);
+        Timer timer = new Timer();
+        timer.schedule(new FirstTask(this), 0,5000);
         // Add a marker in Sydney and move the camera
         LatLng loc = new LatLng(latitude, longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
