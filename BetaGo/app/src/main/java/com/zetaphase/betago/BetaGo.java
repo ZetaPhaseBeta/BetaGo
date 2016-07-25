@@ -36,8 +36,6 @@ import java.util.TimerTask;
 class MarkerThread extends Thread {
     private BetaGo activity;
 
-    private HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
-
     MarkerThread(BetaGo activity){
         this.activity = activity;
     }
@@ -54,8 +52,8 @@ class MarkerThread extends Thread {
             connection.setDoInput(true);
             connection.connect();
 
+            Log.d("REQUESTOUTPUT", "requesting");
             byte[] b = jsonObj.toString().getBytes();
-
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(b);
 
@@ -76,15 +74,30 @@ class MarkerThread extends Thread {
         return chaine;
     }
 
-    public static HashMap<String, String> jsonToMap(String t) throws JSONException {
-
+    private static HashMap<String, String> helperMap(String t) throws JSONException {
         HashMap<String, String> map = new HashMap<String, String>();
         JSONObject jObject = new JSONObject(t);
         Iterator<?> keys = jObject.keys();
 
         while( keys.hasNext() ){
             String key = (String)keys.next();
-            String value = jObject.getString(key);
+           String value = jObject.getString(key);
+            map.put(key, value);
+
+        }
+
+        return map;
+    }
+
+    public static HashMap<String, HashMap<String, String>> jsonToMap(String t) throws JSONException {
+
+        HashMap<String, HashMap<String, String>> map = new HashMap<String, HashMap<String, String>>();
+        JSONObject jObject = new JSONObject(t);
+        Iterator<?> keys = jObject.keys();
+
+        while( keys.hasNext() ){
+            String key = (String)keys.next();
+            HashMap<String, String> value = helperMap(jObject.getString(key));
             map.put(key, value);
 
         }
@@ -114,15 +127,19 @@ class MarkerThread extends Thread {
         activity.runOnUiThread(new Runnable() {
             public void run(){
                 //Toast.makeText(activity.getBaseContext(), (CharSequence) httpresponse, Toast.LENGTH_LONG).show();
+
                 for(String key : response.keySet()){
-                    lat = response.get(key)
-                    if (!markerMap.containsKey(key)){
-                        Log.d("MARKER", response.get(key));
-                        //markerMap.get(key) = activity.mMap.addMarker(new MarkerOptions().position(new LatLng(response.get(key).get(""))));
+                    double lat = Double.parseDouble(response.get(key).get("lat"));
+                    double lng = Double.parseDouble(response.get(key).get("lng"));
+                    if (!activity.markerMap.containsKey(key)){
+                        Log.d("NOTCONTAINS", "Marker map does not contain key");
+                        activity.markerMap.put(key, activity.mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(key)));
+                    } else {
+                        Log.d("CONTAINS", "Marker map does contains key");
+                        activity.markerMap.get(key).setPosition(new LatLng(lat, lng));
                     }
                 }
-                activity.marker = activity.mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
-                activity.marker.setVisible(true);
+
             }
         });
 
@@ -164,6 +181,7 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
     public int pointer = 0;
     public LocationManager lm;
     public Marker marker;
+    public HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
