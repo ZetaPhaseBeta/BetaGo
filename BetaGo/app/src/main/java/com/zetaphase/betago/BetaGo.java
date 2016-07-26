@@ -107,6 +107,7 @@ class MarkerThread extends Thread {
 
     private void post() throws IOException, JSONException {
         Log.d("POST", "posting");
+        Log.d("POSTLM", String.valueOf(activity.lm));
         Location location = activity.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         final double longitude = location.getLongitude();
         final double latitude = location.getLatitude();
@@ -211,6 +212,7 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
         this.lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        Log.d("LM", String.valueOf(this.lm));
         Location location = this.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         final double longitude = location.getLongitude();
         final double latitude = location.getLatitude();
