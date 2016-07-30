@@ -270,6 +270,11 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
                     });
                 }
             });
+            Button replay = (Button) findViewById(R.id.replay);
+            replay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View V)
+            });
             //this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
             Timer timer = new Timer();
             timer.schedule(new FirstTask(this), 0, 5000);
