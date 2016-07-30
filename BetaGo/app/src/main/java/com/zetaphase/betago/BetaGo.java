@@ -185,11 +185,15 @@ class ReplayTask extends TimerTask {
 
     @Override
     public void run(){
-        activity.replayMarker.setVisible(true);
-        activity.replayMarker.setPosition(activity.myRecord.get(activity.replayPos));
-        if (activity.replayPos >= activity.myRecord.size()){
-            this.cancel();
+        if (activity.replayTimerFirstTime){
+            activity.replayMarker = activity.mMap.addMarker(new MarkerOptions().position(new LatLng(activity.myRecord.get(0).latitude, activity.myRecord.get(0).longitude)).title("Replay Marker"));
+        }else{
+            activity.replayMarker.setPosition(activity.myRecord.get(activity.replayPos));
+            if (activity.replayPos >= activity.myRecord.size()){
+                this.cancel();
+            }
         }
+        activity.replayPos +=1;
     }
 }
 
@@ -220,7 +224,8 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
     public HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
     public List<LatLng> myRecord = new ArrayList<LatLng>();
     public int replayPos = 0;
-    public Marker replayMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Replay Marker").visible(false));
+    public boolean replayTimerFirstTime = true;
+    public Marker replayMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
