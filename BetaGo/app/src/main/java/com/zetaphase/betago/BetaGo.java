@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,8 +31,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -158,6 +163,10 @@ class MarkerThread extends Thread {
     }
 }
 
+class RecordTask extends TimerTask {
+    private BetaG
+}
+
 class FirstTask extends TimerTask {
 
     private BetaGo activity;
@@ -183,6 +192,7 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
     public LocationManager lm;
     public Marker marker;
     public HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
+    public List<LatLng> myRecord = new ArrayList<LatLng>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,13 +222,20 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
         this.lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        Log.d("LM", String.valueOf(this.lm));
         Location location = this.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Log.d("LM", String.valueOf(location));
         final double longitude = location.getLongitude();
         final double latitude = location.getLatitude();
+        Button btn = (Button) findViewById(R.id.record);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                Toast.makeText(getBaseContext(), "Record", Toast.LENGTH_LONG).show();
+            }
+        });
         //this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
         Timer timer = new Timer();
-        timer.schedule(new FirstTask(this), 0,5000);
+        timer.schedule(new FirstTask(this), 0, 5000);
         // Add a marker in Sydney and move the camera
         LatLng loc = new LatLng(latitude, longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
