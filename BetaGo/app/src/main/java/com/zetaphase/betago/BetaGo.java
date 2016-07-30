@@ -257,13 +257,14 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
             record.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
-                    Toast.makeText(getBaseContext(), "Record", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Record", Toast.LENGTH_SHORT).show();
                     final Timer timer = new Timer();
                     timer.schedule(new RecordTask(finalActivity), 0, 5000);
                     Button stop = (Button) findViewById(R.id.stop);
                     stop.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v){
+                            Toast.makeText(getBaseContext(), "Stop", Toast.LENGTH_SHORT).show();
                             timer.cancel();
                             timer.purge();
                         }
@@ -273,7 +274,9 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
             Button replay = (Button) findViewById(R.id.replay);
             replay.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View V)
+                public void onClick(View v){
+                    Toast.makeText(getBaseContext(), "Replay", Toast.LENGTH_SHORT).show();
+                }
             });
             //this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
             Timer timer = new Timer();
