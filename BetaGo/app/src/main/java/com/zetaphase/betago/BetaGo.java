@@ -164,7 +164,18 @@ class MarkerThread extends Thread {
 }
 
 class RecordTask extends TimerTask {
-    private BetaG
+    private BetaGo activity;
+
+    RecordTask(BetaGo activity){this.activity = activity;}
+
+    @Override
+    public void run(){
+        Location location = activity.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        activity.myRecord.add(new LatLng(latitude, longitude));
+        Log.d("RECORDING", String.valueOf(activity.myRecord));
+    }
 }
 
 class FirstTask extends TimerTask {
@@ -227,10 +238,13 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
         final double longitude = location.getLongitude();
         final double latitude = location.getLatitude();
         Button btn = (Button) findViewById(R.id.record);
+        final BetaGo finalActivity = this;
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 Toast.makeText(getBaseContext(), "Record", Toast.LENGTH_LONG).show();
+                Timer timer = new Timer();
+                timer.schedule(new RecordTask(finalActivity), 0, 5000);
             }
         });
         //this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
