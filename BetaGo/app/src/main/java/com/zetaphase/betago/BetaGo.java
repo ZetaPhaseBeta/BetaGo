@@ -179,7 +179,15 @@ class RecordTask extends TimerTask {
 }
 
 class ReplayTask extends TimerTask {
-    
+    private BetaGo activity;
+
+    ReplayTask(BetaGo activity){this.activity = activity;}
+
+    @Override
+    public void run(){
+        activity.replayMarker.setVisible(true);
+        activity.replayMarker.setPosition(activity.myRecord.get(activity.replayPos));
+    }
 }
 
 class FirstTask extends TimerTask {
@@ -208,6 +216,8 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
     public Marker marker;
     public HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
     public List<LatLng> myRecord = new ArrayList<LatLng>();
+    public int replayPos = 0;
+    public Marker replayMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Replay Marker").visible(false));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,14 +252,22 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
         if (location!=null){
             final double longitude = location.getLongitude();
             final double latitude = location.getLatitude();
-            Button btn = (Button) findViewById(R.id.record);
+            Button record = (Button) findViewById(R.id.record);
             final BetaGo finalActivity = this;
-            btn.setOnClickListener(new View.OnClickListener() {
+            record.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
                     Toast.makeText(getBaseContext(), "Record", Toast.LENGTH_LONG).show();
-                    Timer timer = new Timer();
+                    final Timer timer = new Timer();
                     timer.schedule(new RecordTask(finalActivity), 0, 5000);
+                    Button stop = (Button) findViewById(R.id.stop);
+                    stop.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v){
+                            timer.cancel();
+                            timer.purge();
+                        }
+                    });
                 }
             });
             //this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
