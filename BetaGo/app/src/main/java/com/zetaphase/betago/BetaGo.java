@@ -178,6 +178,10 @@ class RecordTask extends TimerTask {
     }
 }
 
+class ReplayTask extends TimerTask {
+    
+}
+
 class FirstTask extends TimerTask {
 
     private BetaGo activity;
@@ -235,24 +239,26 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
         this.lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Location location = this.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         Log.d("LM", String.valueOf(location));
-        final double longitude = location.getLongitude();
-        final double latitude = location.getLatitude();
-        Button btn = (Button) findViewById(R.id.record);
-        final BetaGo finalActivity = this;
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                Toast.makeText(getBaseContext(), "Record", Toast.LENGTH_LONG).show();
-                Timer timer = new Timer();
-                timer.schedule(new RecordTask(finalActivity), 0, 5000);
-            }
-        });
-        //this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
-        Timer timer = new Timer();
-        timer.schedule(new FirstTask(this), 0, 5000);
-        // Add a marker in Sydney and move the camera
-        LatLng loc = new LatLng(latitude, longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
-    }
+        if (location!=null){
+            final double longitude = location.getLongitude();
+            final double latitude = location.getLatitude();
+            Button btn = (Button) findViewById(R.id.record);
+            final BetaGo finalActivity = this;
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v){
+                    Toast.makeText(getBaseContext(), "Record", Toast.LENGTH_LONG).show();
+                    Timer timer = new Timer();
+                    timer.schedule(new RecordTask(finalActivity), 0, 5000);
+                }
+            });
+            //this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
+            Timer timer = new Timer();
+            timer.schedule(new FirstTask(this), 0, 5000);
+            // Add a marker in Sydney and move the camera
+            LatLng loc = new LatLng(latitude, longitude);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+        }
+        }
 
 }
