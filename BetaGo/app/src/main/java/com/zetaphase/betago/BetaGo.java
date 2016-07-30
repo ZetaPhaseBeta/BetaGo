@@ -187,6 +187,9 @@ class ReplayTask extends TimerTask {
     public void run(){
         activity.replayMarker.setVisible(true);
         activity.replayMarker.setPosition(activity.myRecord.get(activity.replayPos));
+        if (activity.replayPos >= activity.myRecord.size()){
+            this.cancel();
+        }
     }
 }
 
@@ -276,6 +279,8 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
                 @Override
                 public void onClick(View v){
                     Toast.makeText(getBaseContext(), "Replay", Toast.LENGTH_SHORT).show();
+                    Timer timer = new Timer();
+                    timer.schedule(new ReplayTask(finalActivity), 0, 5000);
                 }
             });
             //this.marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("New Marker"));
