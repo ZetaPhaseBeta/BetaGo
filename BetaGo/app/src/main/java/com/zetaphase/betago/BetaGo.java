@@ -2,6 +2,7 @@ package com.zetaphase.betago;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -175,6 +177,16 @@ class RecordTask extends TimerTask {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         activity.myRecord.add(new LatLng(latitude, longitude));
+        activity.runOnUiThread(new Runnable(){
+            @Override
+            public void run(){
+                activity.mMap.addPolyline(new PolylineOptions()
+                        .add(new LatLng(latitude, longitude))
+                        .width(12)
+                        .color(Color.parseColor("#05b1fb"))
+                        .geodesic(true));
+            }
+        });
         Log.d("RECORDING", String.valueOf(activity.myRecord));
     }
 }
