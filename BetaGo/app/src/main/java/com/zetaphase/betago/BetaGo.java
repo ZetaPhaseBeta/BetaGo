@@ -20,6 +20,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -186,10 +187,21 @@ class ReplayTask extends TimerTask {
     @Override
     public void run(){
         if (activity.replayTimerFirstTime){
-            activity.replayMarker = activity.mMap.addMarker(new MarkerOptions().position(new LatLng(activity.myRecord.get(0).latitude, activity.myRecord.get(0).longitude)).title("Replay Marker"));
+            activity.runOnUiThread(new Runnable(){
+                @Override
+                public void run(){
+                    activity.replayMarker = activity.mMap.addMarker(new MarkerOptions().position(new LatLng(activity.myRecord.get(0).latitude, activity.myRecord.get(0).longitude)).title("Replay Marker"));
+                }
+            });
+            activity.replayTimerFirstTime = false;
         }else{
-            activity.replayMarker.setPosition(activity.myRecord.get(activity.replayPos));
-            if (activity.replayPos >= activity.myRecord.size()){
+            activity.runOnUiThread(new Runnable(){
+                @Override
+                public void run(){
+                    activity.replayMarker.setPosition(activity.myRecord.get(activity.replayPos));
+                }
+            });
+            if (activity.replayPos >= activity.myRecord.size()-1){
                 this.cancel();
             }
         }
@@ -223,6 +235,7 @@ public class BetaGo extends FragmentActivity implements OnMapReadyCallback {
     public Marker marker;
     public HashMap<String, Marker> markerMap = new HashMap<String, Marker>();
     public List<LatLng> myRecord = new ArrayList<LatLng>();
+    public Polyline myRecordPath = new Polyline();
     public int replayPos = 0;
     public boolean replayTimerFirstTime = true;
     public Marker replayMarker;
