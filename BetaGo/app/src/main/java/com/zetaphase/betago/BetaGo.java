@@ -176,12 +176,13 @@ class RecordTask extends TimerTask {
         Location location = activity.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
-        activity.myRecord.add(new LatLng(latitude, longitude));
+        final LatLng currentPos = new LatLng(latitude, longitude);
+        activity.myRecord.add(currentPos);
         activity.runOnUiThread(new Runnable(){
             @Override
             public void run(){
                 activity.mMap.addPolyline(new PolylineOptions()
-                        .add(new LatLng(latitude, longitude))
+                        .add(currentPos)
                         .width(12)
                         .color(Color.parseColor("#05b1fb"))
                         .geodesic(true));
