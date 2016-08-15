@@ -5,6 +5,7 @@ Android game using augmented reality.
  - inspired by Pokemon Go by Niantic Inc.
  - currently deprecated for confidential reasons
  - android tutorials coming soon
+   - intents
 
 ## Quick Start For Developers
 
