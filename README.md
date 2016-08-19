@@ -8,6 +8,7 @@ Android game using augmented reality.
   - intents
    - camera
    - activity
+  - google maps
 
 ## Quick Start For Developers
 
