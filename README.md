@@ -8,6 +8,8 @@ Android game using augmented reality.
    - camera
    - activity
   - google maps
+- deprecated
+
 
 ## Quick Start For Developers
 
