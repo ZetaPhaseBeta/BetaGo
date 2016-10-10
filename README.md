@@ -3,7 +3,7 @@ Android game using augmented reality.
  - built using Google Maps Android API
  - built using Google Maps Directions API
  - inspired by Pokemon Go by Niantic Inc.
- - android tutorials coming soon on my blog
+ - android tutorials coming soon on my blog.
   - intents
    - camera
    - activity
